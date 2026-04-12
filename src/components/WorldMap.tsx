@@ -41,9 +41,9 @@ export default function WorldMap({ museums, clickedPos, onMapClick, onMuseumSele
       attributionControl: true,
     });
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?language=en", {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-    }).addTo(map);
+    L.tileLayer("https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png", {
+  attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>',
+}).addTo(map);
 
     overlayLayerRef.current = L.layerGroup().addTo(map);
 
