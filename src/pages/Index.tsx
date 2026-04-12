@@ -674,11 +674,10 @@ const Index = () => {
 
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => update({ phase: "home" })} className="flex items-center gap-2 hover:opacity-80 transition">
-            <span className="text-2xl">🏛️</span>
-            <h1 className="text-xl font-bold shimmer-text tracking-wider">Art Heist</h1>
-          </button>
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between w-full">
+          <button onClick={() => update({ phase: "home" })} className="flex items-center gap-2 hover:opacity-80 transition mr-auto">
+  <h1 className="text-xl font-bold shimmer-text tracking-wider">Heistory</h1>
+</button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">Score: <span className="text-primary font-semibold">{state.score}</span></span>
             <button onClick={() => { update({ phase: "collection" }); loadBanter("vault"); }}
@@ -702,7 +701,7 @@ const Index = () => {
 
       {/* ══ MAP ══ */}
       {(state.phase === "map" || state.phase === "museum-select") && !state.loading && (
-        <div className="pt-16 h-screen flex flex-col">
+  <div className="pt-16 flex flex-col h-screen overflow-hidden">
           <div className="px-4 py-3 flex items-center gap-2 overflow-x-auto bg-card/50">
             <span className="text-xs text-muted-foreground whitespace-nowrap mr-2">Quick pick:</span>
             {FEATURED_MUSEUMS.map((m) => (
@@ -712,7 +711,7 @@ const Index = () => {
               </button>
             ))}
           </div>
-          <div className="flex-1 relative">
+          <div className="relative flex-1 overflow-hidden">
             <WorldMap museums={FEATURED_MUSEUMS} clickedPos={clickedPos} onMapClick={handleMapClick} onMuseumSelect={handleMuseumSelect} />
 
             {deadZoneMsg && (

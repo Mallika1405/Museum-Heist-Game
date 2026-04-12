@@ -31,14 +31,14 @@ export interface GameState {
 
 const loadCollection = (): CollectedArtifact[] => {
   try {
-    return JSON.parse(localStorage.getItem("artheist-collection") || "[]");
+    return JSON.parse(localStorage.getItem("heistory-collection") || "[]");
   } catch {
     return [];
   }
 };
 
 const saveCollection = (c: CollectedArtifact[]) => {
-  localStorage.setItem("artheist-collection", JSON.stringify(c));
+  localStorage.setItem("heistory-collection", JSON.stringify(c));
 };
 
 const INITIAL: GameState = {

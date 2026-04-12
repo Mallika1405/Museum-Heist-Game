@@ -103,7 +103,7 @@ function classifySource(url) {
 // ─── RARITY LOGIC ────────────────────────────────────────────────────────────
 function computeRarity(niaCount) {
   if (niaCount >= 15) return "Common";
-  if (niaCount >= 6)  return "Rare";
+  if (niaCount >= 10)  return "Rare";
   return "Legendary";
 }
 
@@ -126,20 +126,27 @@ app.post("/api/search-artifacts", async (req, res) => {
       .map((r) => r.text || r.snippet || r.content || "")
       .join("\n");
 
-    const prompt = `Based on the following search results, extract exactly 5 real, well-known museum artifacts.
+    const prompt = museumName
+  ? `You are a museum expert. List exactly 5 famous artifacts from the permanent collection of "${museumName}".
 
-STRICT RULES:
-- Only include artifacts that are genuinely famous and actually held in major museums
-- The "museum" field must be the REAL museum where this artifact is actually displayed — do not guess or invent it
-- Do NOT assign all artifacts to the same museum just because the search was about that region
-- If an artifact's actual museum is unknown from the data, skip it and pick a different one
+CRITICAL: Every artifact MUST actually be in "${museumName}". Do not include artifacts from other museums even if they appear in the search data below.
+
+Use the search data below only as a hint — if it mentions artifacts not in "${museumName}", ignore them.
 
 Return ONLY valid JSON array, no markdown:
 [
-  {"name": "artifact name", "museum": "real museum name where it is actually held", "shortDescription": "one sentence description", "era": "time period"}
+  {"name": "artifact name", "museum": "${museumName}", "shortDescription": "one sentence description", "era": "time period"}
 ]
 
-Search context: ${museumName ? `artifacts at ${museumName}` : `famous artifacts from ${regionName}`}
+Search data (use as hint only):
+${niaContext}`
+  : `Based on these search results, list exactly 5 real artifacts from museums in or near "${regionName}". Each must be genuinely held in a real museum.
+
+Return ONLY valid JSON array, no markdown:
+[
+  {"name": "artifact name", "museum": "actual museum holding it", "shortDescription": "one sentence description", "era": "time period"}
+]
+
 Search results:
 ${niaContext}`;
 
@@ -594,4 +601,4 @@ app.post("/api/search-museums", async (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`🏛️  ArtHeist server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🏛️  Heistory server running on http://localhost:${PORT}`));
