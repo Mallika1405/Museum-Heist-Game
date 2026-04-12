@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "artheist-local",
+			"path": "."
+		},
+		{
+			"name": "Museum-Heist-Game",
+			"path": "../../Museum-Heist-Game"
+		}
+	],
+	"settings": {}
+}
