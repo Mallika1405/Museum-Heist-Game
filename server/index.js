@@ -31,18 +31,23 @@ async function callLLM(prompt) {
 async function niaSearch(query) {
   if (!NIA_API_KEY) { console.warn('[NIA] NIA_API_KEY not set'); return []; }
 
-  // Try the two most likely body shapes for /v2/search mode:web
-  const bodyShapes = [
-    { mode: 'web', web: { query } },
-    { mode: 'web', query },
+  const attempts = [
+    // universal-search endpoint (different endpoint entirely)
+    { url: 'https://apigcp.trynia.ai/v2/universal-search', body: { query } },
+    { url: 'https://apigcp.trynia.ai/v2/universal-search', body: { query, search_mode: 'unified' } },
+    // search endpoint, every shape imaginable
+    { url: 'https://apigcp.trynia.ai/v2/search', body: { mode: 'universal', query } },
+    { url: 'https://apigcp.trynia.ai/v2/search', body: { mode: 'query', messages: [{ role: 'user', content: query }] } },
+    { url: 'https://apigcp.trynia.ai/v2/search', body: { mode: 'deep', query } },
+    { url: 'https://apigcp.trynia.ai/v2/search', body: { query } },
   ];
 
-  for (const body of bodyShapes) {
+  for (const { url, body } of attempts) {
     try {
-      console.log('[NIA] Trying body:', JSON.stringify(body).slice(0, 80));
+      console.log('[NIA] Trying', url.split('/v2/')[1], JSON.stringify(body).slice(0, 60));
       const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 12000);
-      const resp = await fetch('https://apigcp.trynia.ai/v2/search', {
+      const tid = setTimeout(() => controller.abort(), 15000);
+      const resp = await fetch(url, {
         method: 'POST',
         headers: { Authorization: `Bearer ${NIA_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -51,21 +56,20 @@ async function niaSearch(query) {
       clearTimeout(tid);
       if (resp.ok) {
         const data = await resp.json();
-        const results = data.results || data.items || data.data || [];
-        console.log(`[NIA] Success! ${results.length} results`);
+        const results = data.results || data.items || data.data || data.chunks || [];
+        console.log(`[NIA] ✅ Success with shape:`, JSON.stringify(body).slice(0, 60), `— ${results.length} results`);
         return results;
       }
-      const errText = await resp.text();
-      console.warn(`[NIA] ${resp.status} with shape ${JSON.stringify(body).slice(0,50)}: ${errText.slice(0,120)}`);
+      console.warn(`[NIA] ${resp.status}:`, (await resp.text()).slice(0, 120));
     } catch (e) {
       console.warn('[NIA] Error:', e.name === 'AbortError' ? 'timeout' : e.message);
     }
   }
 
-  // All shapes failed - fallback: use Gemini to generate context (no NIA credits wasted)
-  console.log('[NIA] All shapes failed, returning empty (Gemini will generate without context)');
+  console.log('[NIA] All attempts failed');
   return [];
 }
+
 // ---------- SEARCH ARTIFACTS ----------
 app.post("/api/search-artifacts", async (req, res) => {
   try {
