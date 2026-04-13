@@ -1,6 +1,6 @@
 # 🏛️ Heistory — Collectible Artifact Game
 
-A geography-based educational collectible card game. Click the map, discover real artifacts via NIA + Gemini AI, and answer questions to steal them!
+A history-based educational collectible card game. Click the map, discover real artifacts via NIA + Gemini AI, and answer questions to steal them!
 
 ## Setup
 
